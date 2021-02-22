@@ -1,0 +1,50 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ***************************
+    password: ***********
+    username: ****
+  mvc:
+    view:
+      prefix: /
+      suffix: .html
+  servlet:
+    multipart:
+      max-file-size: 128MB
+      max-request-size: 128MB
+
+  # redis缓存
+  redis:
+    host: 
+    port: 
+  cache:
+    cache-names: redisCache
+    type: redis
+
+  # rabbitmq
+  rabbitmq:
+    addresses: ***********
+    port: ****
+    username: **** 
+    password: ****
+
+  # 邮件服务
+  mail:
+    username: ********************
+    password: ********************
+    protocol: smtp
+    host: smtp.**.com
+server:
+  port: 8001
+  tomcat:
+    max-http-form-post-size: 128MB         # 最大上传大小
+
+fileSystem:
+  tempPath: D:/easycloud/temp             # 服务器文件系统临时文件夹
+  hdfs:
+    namenode: hdfs://192.168.154.128:9000 # hdfs 地址
+    connection-timeout: 30000            # hdfs连接超时时间
+  server:
+    rootPath: D:/easycloud/root
+  type: hdfs
+
