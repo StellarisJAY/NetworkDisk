@@ -5,10 +5,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.jay.fs.dao.FileDAO;
 import com.jay.fs.entity.FileEntity;
-import com.jay.fs.service.FileService;
-import com.jay.fs.service.HdfsService;
-import com.jay.fs.service.ServerFSService;
-import com.jay.fs.service.UserService;
+import com.jay.fs.service.*;
 import com.jay.fs.util.aip.Base64Util;
 import com.jay.fs.vo.FileVo;
 import org.apache.hadoop.fs.Path;
@@ -40,6 +37,8 @@ public class FileServiceImpl implements FileService {
     private RabbitTemplate rabbitTemplate;
     @Autowired
     private ServerFSService serverFSService = null;
+    @Autowired
+    private AIPService aipService = null;
 
     /*
         服务器文件系统临时文件夹，用于批量下载等业务
@@ -107,7 +106,6 @@ public class FileServiceImpl implements FileService {
             避免批量上传的高并发场景下数据库死锁
          */
         rabbitTemplate.convertAndSend("DbExchange.user", "userInfoKey", userId + ":" + file.getSize());
-        //userService.increaseUsedSpace(userId, file.getSize());
 
         // 获取文件的字节数组
         byte[] fileBytes = getFileBytes(inputStream);
@@ -117,8 +115,8 @@ public class FileServiceImpl implements FileService {
         if(isImage(file) == true){
             // 获取图像的base64字符串
             String imageParam = getImageParam(fileBytes);
-            // 发送到消息队列
-            rabbitTemplate.convertAndSend("AIP.image", "imageRec", "{" + file.getFileId().toString() + "}" + imageParam);
+            // 图像识别服务
+            aipService.imageRec(file.getFileId(), imageParam);
         }
 
         // 上传到hdfs集群
